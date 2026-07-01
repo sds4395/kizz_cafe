@@ -20,6 +20,7 @@ export function MapView({ cafes, center, selectedId, onSelect }: Props) {
   const mapRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
   const centerMarkerRef = useRef<any>(null)
+  const overlayRef = useRef<any>(null)
 
   // 지도 최초 1회 생성
   useEffect(() => {
@@ -74,14 +75,47 @@ export function MapView({ cafes, center, selectedId, onSelect }: Props) {
     })
   }, [cafes, onSelect])
 
-  // 선택된 카페로 부드럽게 이동
+  // 선택된 카페로 이동 + 이름/‘카카오로 보기’ 말풍선 오버레이 표시
   useEffect(() => {
-    if (!selectedId) return
     const kakao = window.kakao
     const map = mapRef.current
+    if (!map) return
+
+    // 이전 오버레이 제거
+    overlayRef.current?.setMap(null)
+    overlayRef.current = null
+
+    if (!selectedId) return
     const cafe = cafes.find((c) => c.id === selectedId)
-    if (!map || !cafe) return
-    map.panTo(new kakao.maps.LatLng(cafe.lat, cafe.lng))
+    if (!cafe) return
+
+    const pos = new kakao.maps.LatLng(cafe.lat, cafe.lng)
+    map.panTo(pos)
+
+    // 오버레이 콘텐츠(안전하게 textContent 사용)
+    const box = document.createElement('div')
+    box.className = 'map-overlay'
+    const nameEl = document.createElement('div')
+    nameEl.className = 'map-overlay-name'
+    nameEl.textContent = cafe.name
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'map-overlay-btn'
+    btn.textContent = '카카오로 보기'
+    btn.onclick = () => {
+      // 카카오맵 검색 화면(사진·리뷰·전화 등)을 새 탭에서 연다
+      const q = encodeURIComponent(cafe.name)
+      window.open(`https://map.kakao.com/link/search/${q}`, '_blank', 'noopener')
+    }
+    box.append(nameEl, btn)
+
+    overlayRef.current = new kakao.maps.CustomOverlay({
+      position: pos,
+      content: box,
+      yAnchor: 1.35,
+      zIndex: 20,
+    })
+    overlayRef.current.setMap(map)
   }, [selectedId, cafes])
 
   return <div className="map-view" ref={containerRef} />
