@@ -49,15 +49,34 @@ export function AddCafeForm({ onClose, onSubmit }: Props) {
     setSubmitting(true)
     setError(null)
     try {
-      await onSubmit({
+      // 카카오로 찾은(=현재 운영 중) 장소를, 저장 가능한 공공데이터(소상공인)로 재조회해 치환.
+      // 공공데이터에 없으면 카카오 정보로 폴백. 카카오 장소ID/URL은 저장 허용 항목이라 함께 저장.
+      let src = {
         name: selected.name,
         address: selected.address,
-        region: regionFromAddress(selected.address),
         lat: selected.lat,
         lng: selected.lng,
+      }
+      try {
+        const r = await fetch(
+          `/api/place?lat=${selected.lat}&lng=${selected.lng}&name=${encodeURIComponent(selected.name)}`,
+        )
+        const pub = await r.json()
+        if (pub && pub.ok) src = { name: pub.name, address: pub.address, lat: pub.lat, lng: pub.lng }
+      } catch {
+        /* 공공데이터 조회 실패 → 카카오 정보로 폴백 */
+      }
+
+      await onSubmit({
+        name: src.name,
+        address: src.address,
+        region: regionFromAddress(src.address),
+        lat: src.lat,
+        lng: src.lng,
         description: description.trim(),
         features: [],
-        phone: selected.phone || undefined,
+        kakaoId: selected.id,
+        kakaoUrl: selected.placeUrl,
       })
       onClose()
     } catch (err) {

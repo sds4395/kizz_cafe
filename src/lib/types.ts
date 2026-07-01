@@ -13,6 +13,8 @@ export interface Cafe {
   phone?: string
   source: CafeSource
   createdAt?: string
+  kakaoId?: string // 카카오 장소ID (저장 허용 항목) — ‘카카오로 보기’ 직링크용
+  kakaoUrl?: string // 카카오 장소 상세 URL
 }
 
 export interface GeoPoint {
@@ -35,4 +37,6 @@ export interface NewCafeInput {
   description: string
   features: string[]
   phone?: string
+  kakaoId?: string
+  kakaoUrl?: string
 }

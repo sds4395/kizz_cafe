@@ -23,6 +23,8 @@ function rowToCafe(row: Record<string, unknown>): Cafe {
     phone: row.phone ? String(row.phone) : undefined,
     source: 'user',
     createdAt: row.created_at ? String(row.created_at) : undefined,
+    kakaoId: row.kakao_id ? String(row.kakao_id) : undefined,
+    kakaoUrl: row.kakao_url ? String(row.kakao_url) : undefined,
   }
 }
 
@@ -71,6 +73,8 @@ export function useCafes(): CafesState {
         description: input.description,
         features: input.features,
         phone: input.phone ?? null,
+        kakao_id: input.kakaoId ?? null,
+        kakao_url: input.kakaoUrl ?? null,
       })
       .select()
       .single()

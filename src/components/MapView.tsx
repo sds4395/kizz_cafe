@@ -103,9 +103,11 @@ export function MapView({ cafes, center, selectedId, onSelect }: Props) {
     btn.className = 'map-overlay-btn'
     btn.textContent = '카카오로 보기'
     btn.onclick = () => {
-      // 카카오맵 검색 화면(사진·리뷰·전화 등)을 새 탭에서 연다
-      const q = encodeURIComponent(cafe.name)
-      window.open(`https://map.kakao.com/link/search/${q}`, '_blank', 'noopener')
+      // 장소ID가 있으면 상세 페이지 직링크, 없으면 검색 화면 (둘 다 사진·리뷰·전화 확인 가능)
+      const url = cafe.kakaoId
+        ? `https://place.map.kakao.com/${cafe.kakaoId}`
+        : `https://map.kakao.com/link/search/${encodeURIComponent(cafe.name)}`
+      window.open(url, '_blank', 'noopener')
     }
     box.append(nameEl, btn)
 
