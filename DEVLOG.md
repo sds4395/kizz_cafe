@@ -7,6 +7,7 @@
 
 ## 현재 상태 (2026-07-01 기준)
 
+- ✅ **오늘까지 구현한 모든 기능이 Supabase SQL 적용 + Vercel 배포까지 반영되어 정상 동작 확인됨** (사용자 확인). 통합 SQL(폐업2 삭제, kakao_id/url 컬럼·백필, `append_cafe_note`, `daily_visits`+`bump_visit`) 실행 완료, Vercel에 `SBIZ_API_KEY` 등록 완료.
 - 새 PC(Windows) 개발 환경 세팅 **완료**: Node.js v24, GitHub CLI(로그인됨), 저장소 clone, `npm install`, 빌드 통과.
 - `.env` 3개 값 모두 입력 완료. Supabase는 새 키 형식(`sb_publishable_...`)을 `VITE_SUPABASE_ANON_KEY`에 넣어 사용 중. `kids_cafes` 테이블 존재·조회 정상.
 - `package.json`에 `allowScripts`(esbuild 사전 승인) 추가 — npm 11 install 자동화.
@@ -25,8 +26,10 @@
 - ⚠️ geolocation은 HTTPS(보안 컨텍스트)에서만 동작 → 배포(Vercel https)/localhost OK.
 
 ### 환경 메모
-- 각 PC에서 `.env`는 직접 채워야 함(Git 미추적). 세 값: 카카오 JS 키, `https://sijtdpmslviphzwpowxx.supabase.co`, `sb_publishable_...` 키.
+- 각 PC에서 `.env`는 직접 채워야 함(Git 미추적). **4개 값**: `VITE_KAKAO_MAP_KEY`, `VITE_SUPABASE_URL`(`https://sijtdpmslviphzwpowxx.supabase.co`), `VITE_SUPABASE_ANON_KEY`(`sb_publishable_...`), `SBIZ_API_KEY`(data.go.kr 공공데이터포털 인증키, 서버측 전용). 형식은 `.env.example` 참고.
+- 사무실 PC 첫 세팅 시: `git clone` 또는 `git pull` → `npm install` → `.env` 4값 입력 → `npm run dev`. (Node/GitHub CLI 미설치면 winget으로 설치)
 - ⚠️ Node를 새로 설치한 직후엔 실행 중이던 Claude Code/터미널 세션이 PATH를 못 물려받아 `npm`을 못 찾을 수 있음 → **앱/터미널 재시작**하면 해결.
+- `/api/place`는 로컬에선 vite dev 미들웨어(`vite.config.ts`), 배포에선 Vercel 함수(`api/place.js`)로 동작. 둘 다 `SBIZ_API_KEY` 필요(로컬=.env, 배포=Vercel 환경변수).
 
 ### 데이터 씨딩 + 카카오 연동 (이번 세션)
 - **공공데이터 씨딩**: 소상공인 상가정보 API(data.go.kr)로 강북/강동 키즈카페를 위경도 포함 조회 → 정제 후 Supabase에 7곳 삽입. (수집/삽입 스크립트는 scratchpad에만, 인증키는 커밋 안 함)
@@ -46,9 +49,11 @@
 
 ## 다음 할 일 (TODO)
 
-- [ ] **Supabase SQL 실행(필수·통합본)**: 폐업2 삭제 + kakao_id/url 컬럼·백필 + `append_cafe_note` 함수 + `daily_visits` 테이블·정책 + `bump_visit` 함수 (대화 참고)
-- [ ] **Vercel 환경변수**: `SBIZ_API_KEY` 등록(배포 시 /api/place 동작에 필요)
-- [ ] Supabase 테스트 행(`connection test` 등) 정리 — 사용자 직접
+- [x] ~~Supabase 통합 SQL 실행~~ (완료)
+- [x] ~~Vercel `SBIZ_API_KEY` 등록~~ (완료)
+- [ ] Supabase 테스트 행(`connection test` 등) 남아있으면 정리 — 사용자 직접
+- [ ] (아이디어) 강북/강동 외 지역 키즈카페 확장 씨딩, 즐겨찾기, 필터 태그 UI 등 — 착수 시 선택
+- [ ] (선택) 공공데이터에 없는 신규 카페 저장 시 좌표 폴백을 카카오 대신 VWorld 등 공공 지오코더로 (약관 정합성 강화)
   - 사용자 추가 스팸 방지(간단 인증/신고)
   - 반경 필터·태그 필터 UI
   - 즐겨찾기(로컬 저장) + 상세 페이지
@@ -66,3 +71,4 @@
 - 공공데이터 강북/강동 키즈카페 7곳 씨딩, 폐업 2곳 검출, 맵 오버레이+‘카카오로 보기’ 버튼 구현·검증.
 - 추가 폼 개편(카카오 검증→공공데이터 저장, 서버리스 프록시, 장소ID 저장) 코드 완료·검증. 스키마 SQL은 사용자 실행 대기.
 - 이미등록 배지·설명 덧붙이기(append RPC), 오늘의 방문자수(bump_visit RPC) 구현·검증. DB SQL 대기.
+- 통합 SQL 적용 + Vercel 배포 반영, 실서비스 정상 동작 확인. **이 PC에서의 오늘 작업 마무리.** (다음: 사무실 PC에서 `git pull` 후 이어서)
