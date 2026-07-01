@@ -7,14 +7,18 @@
 
 ## 현재 상태 (2026-07-01 기준)
 
-- 새 PC(Windows)에 개발 환경 세팅 완료: Node.js v24, GitHub CLI, 저장소 clone, `npm install`, 프로덕션 빌드 통과 확인.
-- `package.json`에 `allowScripts`(esbuild 사전 승인) 추가됨 — npm 11에서 install 시 esbuild 스크립트 자동 승인용.
+- 새 PC(Windows) 개발 환경 세팅 **완료**: Node.js v24, GitHub CLI(로그인됨), 저장소 clone, `npm install`, 빌드 통과.
+- `.env` 3개 값 모두 입력 완료 → `npm run dev`로 카카오맵 렌더링 + Supabase 연결(목록 16곳) + 콘솔 에러 0 확인.
+- Supabase는 새 키 형식(`sb_publishable_...`)을 `VITE_SUPABASE_ANON_KEY`에 넣어 사용 중. `kids_cafes` 테이블 존재·조회 정상.
+- `package.json`에 `allowScripts`(esbuild 사전 승인) 추가 — npm 11 install 자동화.
 - `CLAUDE.md`, `DEVLOG.md` 신규 작성 (두 PC 교대 작업 체계 도입).
-- ⚠️ 이 PC의 `.env`는 아직 미완성 — 카카오/Supabase 키 입력 필요(입력 시 지도·공유 DB 활성화).
+
+### 환경 메모
+- 각 PC에서 `.env`는 직접 채워야 함(Git 미추적). 세 값: 카카오 JS 키, `https://sijtdpmslviphzwpowxx.supabase.co`, `sb_publishable_...` 키.
+- ⚠️ Node를 새로 설치한 직후엔 실행 중이던 Claude Code/터미널 세션이 PATH를 못 물려받아 `npm`을 못 찾을 수 있음 → **앱/터미널 재시작**하면 해결.
 
 ## 다음 할 일 (TODO)
 
-- [ ] `.env`에 실제 API 키 3개 입력 (VITE_KAKAO_MAP_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
 - [ ] README "7. 앞으로 개선하면 좋은 것" 항목 중 착수할 것 선택
   - 사용자 추가 스팸 방지(간단 인증/신고)
   - 반경 필터·태그 필터 UI
@@ -27,3 +31,4 @@
 
 ### 2026-07-01
 - 두 번째 PC 개발 환경 초기 세팅 및 교대-작업 문서(CLAUDE.md/DEVLOG.md) 추가.
+- `.env` 3개 값 입력 후 `npm run dev`로 지도·Supabase 연동 실제 동작 확인(에러 0).
