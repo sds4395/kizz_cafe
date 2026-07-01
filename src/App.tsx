@@ -95,7 +95,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">🎈 우리동네 키즈카페</h1>
-        <p className="app-sub">동네를 입력하면 가까운 대형 키즈카페를 찾아드려요</p>
+        <p className="app-sub">내가 아는, 아이랑 가기 좋은 곳을 함께 공유해요</p>
       </header>
 
       <SearchBar
