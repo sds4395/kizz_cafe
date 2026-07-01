@@ -40,7 +40,7 @@ export function MapView({ cafes, center, selectedId, onSelect }: Props) {
     if (!map) return
 
     const pos = new kakao.maps.LatLng(center.lat, center.lng)
-    map.panTo(pos)
+    map.setCenter(pos)
 
     centerMarkerRef.current?.setMap(null)
     const marker = new kakao.maps.Marker({
