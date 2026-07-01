@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { seedCafes } from '../data/seedCafes'
 import { supabase, CAFES_TABLE, isSupabaseConfigured } from '../lib/supabase'
 import type { Cafe, NewCafeInput } from '../lib/types'
 
@@ -27,7 +26,7 @@ function rowToCafe(row: Record<string, unknown>): Cafe {
   }
 }
 
-/** 시드 + 사용자 추가(Supabase) 키즈카페 목록을 병합해 제공한다 */
+/** 사용자 추가(Supabase) 키즈카페 목록을 제공한다 */
 export function useCafes(): CafesState {
   const [userCafes, setUserCafes] = useState<Cafe[]>([])
   const [loading, setLoading] = useState<boolean>(isSupabaseConfigured)
@@ -81,7 +80,7 @@ export function useCafes(): CafesState {
   }, [])
 
   return {
-    cafes: [...seedCafes, ...userCafes],
+    cafes: userCafes,
     loading,
     error,
     addCafe,

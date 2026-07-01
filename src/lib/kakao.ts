@@ -1,5 +1,17 @@
 import type { SearchResult } from './types'
 
+/** 카카오 장소(로컬) 검색 결과 한 건 */
+export interface PlaceResult {
+  id: string
+  name: string
+  address: string // 도로명 우선, 없으면 지번
+  phone: string
+  lat: number
+  lng: number
+  category: string // 예: "음식점 > 카페 > 키즈카페"
+  placeUrl: string
+}
+
 const SDK_ID = 'kakao-maps-sdk'
 let loadPromise: Promise<void> | null = null
 
@@ -63,6 +75,42 @@ export function geocode(query: string): Promise<SearchResult> {
           reject(new Error('주소를 찾지 못했어요. 더 구체적으로 입력해 주세요. (예: 서울 송파구 잠실동)'))
         }
       })
+    })
+  })
+}
+
+/**
+ * 키워드로 장소 후보 목록을 검색한다 (카카오 로컬 검색).
+ * 이름·주소·전화번호·좌표를 담아 반환하며, 사용자가 그중 하나를 선택해 자동 채움에 쓴다.
+ */
+export function searchPlaces(query: string): Promise<PlaceResult[]> {
+  return new Promise((resolve, reject) => {
+    const kakao = window.kakao
+    if (!kakao?.maps?.services) {
+      reject(new Error('카카오맵 서비스가 아직 준비되지 않았습니다.'))
+      return
+    }
+
+    const places = new kakao.maps.services.Places()
+    places.keywordSearch(query, (res: any[], status: string) => {
+      if (status === kakao.maps.services.Status.OK) {
+        resolve(
+          res.map((p) => ({
+            id: String(p.id),
+            name: p.place_name ?? '',
+            address: p.road_address_name || p.address_name || '',
+            phone: p.phone ?? '',
+            lat: parseFloat(p.y),
+            lng: parseFloat(p.x),
+            category: p.category_name ?? '',
+            placeUrl: p.place_url ?? '',
+          })),
+        )
+      } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+        resolve([])
+      } else {
+        reject(new Error('검색 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.'))
+      }
     })
   })
 }

@@ -513,3 +513,133 @@ button {
 .submit-btn:disabled {
   background: #d9ccc1;
 }
+
+/* ===== 장소 검색(추가 폼) ===== */
+.place-search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.place-search-row input {
+  flex: 1;
+}
+
+.place-search-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0 18px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  transition: transform 0.1s, background 0.2s;
+}
+
+.place-search-btn:active {
+  transform: scale(0.97);
+}
+
+.place-search-btn:disabled {
+  background: #d9ccc1;
+}
+
+.place-results {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.place-item {
+  width: 100%;
+  text-align: left;
+  background: #fffdfb;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: border-color 0.2s, transform 0.1s;
+}
+
+.place-item:active {
+  transform: scale(0.99);
+}
+
+.place-item:hover {
+  border-color: var(--primary);
+}
+
+.place-name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.place-addr {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.place-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.place-cat {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--tag-text);
+  background: var(--tag-bg);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.place-phone {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* 선택된 장소 요약 */
+.selected-place {
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.selected-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.reselect-btn {
+  flex-shrink: 0;
+  border: none;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.selected-phone {
+  margin: 6px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+}

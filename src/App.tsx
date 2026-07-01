@@ -36,7 +36,11 @@ export default function App() {
     }
   }, [])
 
-  const onSelect = useCallback((id: string) => setSelectedId(id), [])
+  const onSelect = useCallback((id: string) => {
+    setSelectedId(id)
+    // 카드를 고르면 지도가 보이도록 화면 상단으로 부드럽게 이동
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   const center = search ?? DEFAULT_CENTER
 
