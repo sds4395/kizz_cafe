@@ -5,6 +5,7 @@ import { CafeList } from './components/CafeList'
 import { AddCafeForm } from './components/AddCafeForm'
 import { useKakaoLoader } from './hooks/useKakaoLoader'
 import { useCafes } from './hooks/useCafes'
+import { useVisitorCount } from './hooks/useVisitorCount'
 import { geocode } from './lib/kakao'
 import { distanceKm } from './lib/distance'
 import type { GeoPoint, SearchResult } from './lib/types'
@@ -14,7 +15,8 @@ const DEFAULT_CENTER: GeoPoint = { lat: 37.5663, lng: 126.9779 }
 
 export default function App() {
   const { status: mapStatus, error: mapError } = useKakaoLoader()
-  const { cafes, loading, error: cafesError, addCafe, backendEnabled } = useCafes()
+  const { cafes, loading, error: cafesError, addCafe, appendNote, backendEnabled } = useCafes()
+  const visitorCount = useVisitorCount()
 
   const [search, setSearch] = useState<SearchResult | null>(null)
   const [searching, setSearching] = useState(false)
@@ -94,7 +96,15 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">🎈 우리동네 키즈카페</h1>
+        <div className="app-header-row">
+          <h1 className="app-title">🎈 우리동네 키즈카페</h1>
+          {visitorCount !== null && (
+            <div className="visitor-badge" title="오늘 이 서비스에 방문한 수 (매일 00시 초기화)">
+              <span className="visitor-label">오늘의 방문</span>
+              <span className="visitor-count">{visitorCount.toLocaleString()}</span>
+            </div>
+          )}
+        </div>
         <p className="app-sub">내가 아는, 아이랑 가기 좋은 곳을 함께 공유해요</p>
       </header>
 
@@ -171,7 +181,14 @@ export default function App() {
         ＋ 추가
       </button>
 
-      {showAdd && <AddCafeForm onClose={() => setShowAdd(false)} onSubmit={addCafe} />}
+      {showAdd && (
+        <AddCafeForm
+          onClose={() => setShowAdd(false)}
+          onSubmit={addCafe}
+          onAppend={appendNote}
+          cafes={cafes}
+        />
+      )}
     </div>
   )
 }

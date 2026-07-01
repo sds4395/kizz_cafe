@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { searchPlaces, type PlaceResult } from '../lib/kakao'
-import type { NewCafeInput } from '../lib/types'
+import type { Cafe, NewCafeInput } from '../lib/types'
 
 interface Props {
   onClose: () => void
   onSubmit: (input: NewCafeInput) => Promise<void>
+  onAppend: (id: string, note: string) => Promise<void>
+  cafes: Cafe[]
 }
 
 /** 주소 앞 2토큰을 지역 라벨로 사용 (예: "서울 송파구 올림픽로 300" → "서울 송파구") */
@@ -12,12 +14,29 @@ function regionFromAddress(address: string): string {
   return address.split(' ').slice(0, 2).join(' ')
 }
 
+const norm = (s: string) => (s || '').replace(/\s|동?점$/g, '').toLowerCase()
+
+/** 카카오 검색 결과가 이미 등록된 카페인지 찾는다 (장소ID 우선, 없으면 이름+좌표 근접) */
+function findRegistered(p: PlaceResult, cafes: Cafe[]): Cafe | null {
+  const byId = cafes.find((c) => c.kakaoId && c.kakaoId === p.id)
+  if (byId) return byId
+  const pn = norm(p.name)
+  return (
+    cafes.find((c) => {
+      const cn = norm(c.name)
+      const nameMatch = cn === pn || cn.includes(pn) || pn.includes(cn)
+      const near = Math.abs(c.lat - p.lat) < 0.003 && Math.abs(c.lng - p.lng) < 0.003 // 약 300m
+      return nameMatch && near
+    }) ?? null
+  )
+}
+
 /**
  * 키즈카페 추가 폼(모달).
- * 이름으로 카카오맵을 검색 → 후보를 선택하면 이름·주소·전화번호·좌표가 자동 채워지고,
- * 사용자는 설명(장점/특징)만 자유 입력한다.
+ * 이름으로 카카오맵을 검색 → 후보 선택 시 정보 자동 채움 → 설명만 입력.
+ * 이미 등록된 곳은 목록에 '이미등록' 표시, 선택 시 기존 설명에 내용을 덧붙인다.
  */
-export function AddCafeForm({ onClose, onSubmit }: Props) {
+export function AddCafeForm({ onClose, onSubmit, onAppend, cafes }: Props) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<PlaceResult[]>([])
   const [searching, setSearching] = useState(false)
@@ -26,6 +45,8 @@ export function AddCafeForm({ onClose, onSubmit }: Props) {
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const registered = selected ? findRegistered(selected, cafes) : null
 
   const runSearch = async (e: FormEvent) => {
     e.preventDefault()
@@ -46,11 +67,29 @@ export function AddCafeForm({ onClose, onSubmit }: Props) {
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     if (!selected) return
-    setSubmitting(true)
     setError(null)
+
+    // 이미 등록된 곳 → 기존 설명에 덧붙이기
+    if (registered) {
+      if (!description.trim()) {
+        setError('덧붙일 내용을 입력해 주세요.')
+        return
+      }
+      setSubmitting(true)
+      try {
+        await onAppend(registered.id, description.trim())
+        onClose()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '설명 추가에 실패했어요.')
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
+
+    // 신규 등록 → 카카오로 찾은 장소를 공공데이터로 치환해 저장
+    setSubmitting(true)
     try {
-      // 카카오로 찾은(=현재 운영 중) 장소를, 저장 가능한 공공데이터(소상공인)로 재조회해 치환.
-      // 공공데이터에 없으면 카카오 정보로 폴백. 카카오 장소ID/URL은 저장 허용 항목이라 함께 저장.
       let src = {
         name: selected.name,
         address: selected.address,
@@ -126,18 +165,26 @@ export function AddCafeForm({ onClose, onSubmit }: Props) {
             )}
 
             <ul className="place-results">
-              {results.map((p) => (
-                <li key={p.id}>
-                  <button type="button" className="place-item" onClick={() => setSelected(p)}>
-                    <span className="place-name">{p.name}</span>
-                    <span className="place-addr">{p.address || '주소 정보 없음'}</span>
-                    <span className="place-meta">
-                      {p.category && <span className="place-cat">{p.category.split('>').pop()?.trim()}</span>}
-                      {p.phone && <span className="place-phone">📞 {p.phone}</span>}
-                    </span>
-                  </button>
-                </li>
-              ))}
+              {results.map((p) => {
+                const reg = findRegistered(p, cafes)
+                return (
+                  <li key={p.id}>
+                    <button type="button" className="place-item" onClick={() => setSelected(p)}>
+                      <span className="place-item-main">
+                        <span className="place-name">{p.name}</span>
+                        <span className="place-addr">{p.address || '주소 정보 없음'}</span>
+                        <span className="place-meta">
+                          {p.category && (
+                            <span className="place-cat">{p.category.split('>').pop()?.trim()}</span>
+                          )}
+                          {p.phone && <span className="place-phone">📞 {p.phone}</span>}
+                        </span>
+                      </span>
+                      {reg && <span className="place-badge">이미등록</span>}
+                    </button>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         ) : (
@@ -154,21 +201,42 @@ export function AddCafeForm({ onClose, onSubmit }: Props) {
               {selected.phone && <p className="selected-phone">📞 {selected.phone}</p>}
             </div>
 
-            <label>
-              설명 <span className="hint">(장점, 특징 등을 자유롭게)</span>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-                placeholder="예: 2개 층 대형 실내 놀이터, 영유아 전용존, 주차 편리, 시간당 요금 등"
-                autoFocus
-              />
-            </label>
+            {registered ? (
+              <>
+                <div className="existing-note">
+                  <span className="existing-note-label">이미 등록된 곳이에요 · 기존 설명</span>
+                  <p className="existing-note-body">
+                    {registered.description || '(등록된 설명이 없어요)'}
+                  </p>
+                </div>
+                <label>
+                  내용 덧붙이기 <span className="hint">(기존 설명 아래에 추가돼요)</span>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                    placeholder="예: 방문 후기, 추가 팁, 바뀐 정보 등"
+                    autoFocus
+                  />
+                </label>
+              </>
+            ) : (
+              <label>
+                설명 <span className="hint">(장점, 특징 등을 자유롭게)</span>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  placeholder="예: 2개 층 대형 실내 놀이터, 영유아 전용존, 주차 편리, 시간당 요금 등"
+                  autoFocus
+                />
+              </label>
+            )}
 
             {error && <p className="form-error">{error}</p>}
 
             <button className="submit-btn" type="submit" disabled={submitting}>
-              {submitting ? '저장 중…' : '이 키즈카페 추가하기'}
+              {submitting ? '저장 중…' : registered ? '설명 덧붙이기' : '이 키즈카페 추가하기'}
             </button>
           </form>
         )}

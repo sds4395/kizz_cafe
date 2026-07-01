@@ -81,11 +81,43 @@ button {
   border-bottom-right-radius: 24px;
 }
 
+.app-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .app-title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+/* 오늘의 방문자수 배지 */
+.visitor-badge {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  line-height: 1.1;
+}
+
+.visitor-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.visitor-count {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .app-sub {
@@ -656,9 +688,18 @@ button {
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 0.2s, transform 0.1s;
+}
+
+.place-item-main {
+  display: flex;
   flex-direction: column;
   gap: 3px;
-  transition: border-color 0.2s, transform 0.1s;
+  min-width: 0;
 }
 
 .place-item:active {
@@ -667,6 +708,18 @@ button {
 
 .place-item:hover {
   border-color: var(--primary);
+}
+
+/* 이미 등록된 곳 배지 (검색 결과 우측) */
+.place-badge {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--user-tag-text);
+  background: var(--user-tag-bg);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .place-name {
@@ -735,4 +788,30 @@ button {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--accent);
+}
+
+/* 이미 등록된 곳: 기존 설명(읽기 전용) */
+.existing-note {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: #f6f2ee;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  opacity: 0.85;
+}
+
+.existing-note-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.existing-note-body {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4a413b;
+  white-space: pre-wrap;
+  line-height: 1.5;
 }

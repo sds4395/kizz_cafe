@@ -39,9 +39,14 @@
 - **검증 완료**: /api/place 프록시 정상(프레리키즈카페 치환 확인), 폼 제출 시 재조회→insert까지 흐름 확인. insert는 `kakao_id` 컬럼 필요(아래 SQL).
 - ⚠️ **미완(사용자 SQL 필요)**: Supabase에 `kakao_id`,`kakao_url` 컬럼 추가 전엔 신규 추가가 400. 폐업 2곳 삭제/기존 카페 장소ID 백필도 같은 SQL로.
 
+### 이미등록 표시·설명 덧붙이기 + 방문자수 (이번 세션, 코드 완료)
+- **이미등록/덧붙이기**: 추가 폼이 `cafes`를 받아 카카오 검색결과가 이미 등록됐는지(kakao_id 우선, 없으면 이름+좌표 근접) 판단 → 우측 ‘이미등록’ 배지. 선택 시 기존 설명(읽기전용)+덧붙이기 입력 → `append_cafe_note` RPC로 기존 설명에 append. (RLS update 정책 대신 security-definer 함수로 append만 허용)
+- **오늘의 방문자수**: 헤더 우측 배지. `useVisitorCount`가 세션당 1회 `bump_visit` RPC 호출(sessionStorage 가드) → daily_visits(KST 날짜별) 누적, 00시(Asia/Seoul) 자연 리셋. RPC/테이블 없으면 배지 숨김(graceful).
+- 검증: 이미등록 배지·덧붙이기 UI 로컬 확인. append/방문자수 실제 동작은 아래 SQL 후.
+
 ## 다음 할 일 (TODO)
 
-- [ ] **Supabase SQL 실행(필수)**: 폐업 2곳 삭제 + `kakao_id`/`kakao_url` 컬럼 추가 + 기존 카페 장소ID 백필 (대화 참고)
+- [ ] **Supabase SQL 실행(필수·통합본)**: 폐업2 삭제 + kakao_id/url 컬럼·백필 + `append_cafe_note` 함수 + `daily_visits` 테이블·정책 + `bump_visit` 함수 (대화 참고)
 - [ ] **Vercel 환경변수**: `SBIZ_API_KEY` 등록(배포 시 /api/place 동작에 필요)
 - [ ] Supabase 테스트 행(`connection test` 등) 정리 — 사용자 직접
   - 사용자 추가 스팸 방지(간단 인증/신고)
@@ -60,3 +65,4 @@
 - 현재 위치 기능(내 위치 기준 지도 + 우하단 현재위치 버튼) 구현·검증·커밋.
 - 공공데이터 강북/강동 키즈카페 7곳 씨딩, 폐업 2곳 검출, 맵 오버레이+‘카카오로 보기’ 버튼 구현·검증.
 - 추가 폼 개편(카카오 검증→공공데이터 저장, 서버리스 프록시, 장소ID 저장) 코드 완료·검증. 스키마 SQL은 사용자 실행 대기.
+- 이미등록 배지·설명 덧붙이기(append RPC), 오늘의 방문자수(bump_visit RPC) 구현·검증. DB SQL 대기.

@@ -7,6 +7,7 @@ interface CafesState {
   loading: boolean
   error: string | null
   addCafe: (input: NewCafeInput) => Promise<void>
+  appendNote: (id: string, note: string) => Promise<void>
   backendEnabled: boolean
 }
 
@@ -83,11 +84,28 @@ export function useCafes(): CafesState {
     if (data) setUserCafes((prev) => [rowToCafe(data), ...prev])
   }, [])
 
+  // 이미 등록된 카페에 설명을 덧붙인다 (RLS 우회 RPC append_cafe_note 사용)
+  const appendNote = useCallback(async (id: string, note: string) => {
+    if (!supabase) {
+      throw new Error('공유 백엔드(Supabase)가 설정되지 않았어요.')
+    }
+    const { data, error: err } = await supabase.rpc('append_cafe_note', {
+      p_id: id,
+      p_note: note,
+    })
+    if (err) throw new Error(err.message)
+    const newDesc = typeof data === 'string' ? data : null
+    setUserCafes((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, description: newDesc ?? c.description } : c)),
+    )
+  }, [])
+
   return {
     cafes: userCafes,
     loading,
     error,
     addCafe,
+    appendNote,
     backendEnabled: isSupabaseConfigured,
   }
 }
