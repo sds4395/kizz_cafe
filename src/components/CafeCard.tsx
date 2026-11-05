@@ -29,7 +29,15 @@ export function CafeCard({ cafe, distanceKm, active, onClick }: Props) {
       </div>
       {cafe.phone && (
         <a className="cafe-phone" href={`tel:${cafe.phone}`} onClick={(e) => e.stopPropagation()}>
-          📞 {cafe.phone}
+          <svg viewBox="0 0 18 18" width="13" height="13" fill="none" aria-hidden="true">
+            <path
+              d="M4.1 3.2h2.1l1 2.9-1.4 1.3a7.6 7.6 0 0 0 3.6 3.6l1.3-1.4 2.9 1v2.1c0 .7-.6 1.2-1.3 1.1A11.6 11.6 0 0 1 3 4.5c-.1-.7.4-1.3 1.1-1.3Z"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {cafe.phone}
         </a>
       )}
     </button>

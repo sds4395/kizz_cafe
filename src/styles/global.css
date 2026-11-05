@@ -1,38 +1,41 @@
 :root {
-  /* 색상 토큰 — 따뜻하고 친근한 키즈 테마 */
-  --bg: #fff7ef;
-  --bg-grad-1: #fff2e2;
-  --bg-grad-2: #ffeef4;
-  --surface: #ffffff;
-  --text: #2a2320;
-  --muted: #8a7e76;
-  --line: #f0e6db;
+  /* 색상 토큰 — 동네 코르크보드에서 가져온 따뜻한 종이·압핀 팔레트 */
+  --bg: #f7f1e2;
+  --bg-grad-1: #faf5e9;
+  --bg-grad-2: #f0e6cc;
+  --surface: #fffdf8;
+  --surface-tint: #f1e9d6;
+  --text: #2b241d;
+  --text-soft: #4a4030;
+  --muted: #6b5e4f;
+  --line: #e7dac0;
+  --disabled-bg: #d8cbb2;
 
-  --primary: #ff7a59;
-  --primary-dark: #ef5f3c;
-  --accent: #2563eb;
-  --accent-soft: #e8effe;
-  --tag-bg: #fff0e9;
-  --tag-text: #d1552f;
-  --user-tag-bg: #e8f6ee;
-  --user-tag-text: #1f9d55;
+  --primary: #b8441e;
+  --primary-dark: #8f3315;
+  --accent: #2b6358;
+  --accent-soft: #dceae5;
+  --tag-bg: #f4dfd4;
+  --tag-text: #8f3315;
+  --user-tag-bg: #dceae5;
+  --user-tag-text: #1f4a40;
 
   --warn-bg: #fff6e5;
   --warn-text: #9a6b00;
   --error-bg: #ffecea;
   --error-text: #c0392b;
-  --info-bg: #eef2ff;
-  --info-text: #3f51b5;
+  --info-bg: #dceae5;
+  --info-text: #1f4a40;
 
   /* 형태 */
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow-sm: 0 1px 3px rgba(70, 45, 30, 0.08);
-  --shadow-md: 0 6px 18px rgba(70, 45, 30, 0.1);
-  --shadow-lg: 0 12px 32px rgba(70, 45, 30, 0.18);
+  --shadow-sm: 0 1px 3px rgba(43, 36, 29, 0.09);
+  --shadow-md: 0 6px 18px rgba(43, 36, 29, 0.12);
+  --shadow-lg: 0 12px 32px rgba(43, 36, 29, 0.2);
 
   --app-max: 480px;
-  --header-accent: linear-gradient(135deg, #ff9a6c, #ff7a59);
+  --header-accent: linear-gradient(135deg, #c85a2c, var(--primary-dark));
 }
 
 * {
@@ -46,7 +49,7 @@ body {
 }
 
 body {
-  font-family: 'Pretendard', system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic',
+  font-family: 'Noto Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic',
     sans-serif;
   color: var(--text);
   background: linear-gradient(160deg, var(--bg-grad-1), var(--bg-grad-2));
@@ -54,9 +57,51 @@ body {
   line-height: 1.5;
 }
 
+h1,
+h2,
+h3 {
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff6ee;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-grad-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b89a6a;
+  border-radius: 8px;
+  border: 2px solid var(--bg-grad-2);
+}
+
+html {
+  scrollbar-color: #b89a6a var(--bg-grad-2);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== 앱 셸 ===== */
@@ -90,9 +135,17 @@ button {
 
 .app-title {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.app-title-icon {
+  flex-shrink: 0;
+  color: #ffd9b0;
 }
 
 /* 오늘의 방문자수 배지 */
@@ -160,7 +213,9 @@ button {
 }
 
 .search-icon {
-  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  color: var(--muted);
 }
 
 .search-input {
@@ -191,7 +246,7 @@ button {
 }
 
 .search-btn:disabled {
-  background: #d9ccc1;
+  background: var(--disabled-bg);
   box-shadow: none;
 }
 
@@ -284,7 +339,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #efe7dd;
+  background: var(--surface-tint);
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -390,6 +445,7 @@ button {
 
 /* ===== 카페 카드 ===== */
 .cafe-card {
+  position: relative;
   width: 100%;
   text-align: left;
   background: var(--surface);
@@ -410,6 +466,19 @@ button {
 .cafe-card.is-active {
   border-color: var(--primary);
   box-shadow: var(--shadow-md);
+}
+
+/* 선택된 카페 = 압핀으로 고정된 카드 (시그니처 무브) */
+.cafe-card.is-active::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffd9b0, var(--primary) 55%, var(--primary-dark) 100%);
+  box-shadow: 0 2px 3px rgba(43, 36, 29, 0.35), 0 0 0 3px var(--surface);
 }
 
 .cafe-card-head {
@@ -452,7 +521,7 @@ button {
 .cafe-desc {
   margin: 6px 0 0;
   font-size: 0.85rem;
-  color: #4a413b;
+  color: var(--text-soft);
 }
 
 .cafe-tags {
@@ -479,6 +548,9 @@ button {
 .cafe-phone {
   margin-top: 10px;
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--accent);
@@ -491,11 +563,14 @@ button {
   right: max(16px, calc((100vw - var(--app-max)) / 2 + 16px));
   bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
   z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   border: none;
   background: var(--primary);
   color: #fff;
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 14px 20px;
   border-radius: 999px;
   box-shadow: var(--shadow-lg);
@@ -512,7 +587,7 @@ button {
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: rgba(40, 30, 24, 0.45);
+  background: rgba(43, 36, 29, 0.5);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -559,6 +634,9 @@ button {
 }
 
 .modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: var(--line);
   color: var(--text);
@@ -597,7 +675,7 @@ button {
   padding: 12px 14px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fffdfb;
+  background: var(--surface);
   outline: none;
   transition: border-color 0.2s;
 }
@@ -636,7 +714,7 @@ button {
 }
 
 .submit-btn:disabled {
-  background: #d9ccc1;
+  background: var(--disabled-bg);
 }
 
 /* ===== 장소 검색(추가 폼) ===== */
@@ -666,7 +744,7 @@ button {
 }
 
 .place-search-btn:disabled {
-  background: #d9ccc1;
+  background: var(--disabled-bg);
 }
 
 .place-results {
@@ -683,7 +761,7 @@ button {
 .place-item {
   width: 100%;
   text-align: left;
-  background: #fffdfb;
+  background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -752,6 +830,9 @@ button {
 }
 
 .place-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--accent);
@@ -785,6 +866,9 @@ button {
 
 .selected-phone {
   margin: 6px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--accent);
@@ -796,7 +880,7 @@ button {
   flex-direction: column;
   gap: 6px;
   padding: 12px 14px;
-  background: #f6f2ee;
+  background: var(--surface-tint);
   border: 1.5px dashed var(--line);
   border-radius: var(--radius-sm);
   opacity: 0.85;
@@ -811,7 +895,7 @@ button {
 .existing-note-body {
   margin: 0;
   font-size: 0.85rem;
-  color: #4a413b;
+  color: var(--text-soft);
   white-space: pre-wrap;
   line-height: 1.5;
 }

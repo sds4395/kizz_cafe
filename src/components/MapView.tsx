@@ -12,7 +12,7 @@ const DEFAULT_LEVEL = 6
 
 const CENTER_PIN_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">' +
-  '<circle cx="14" cy="14" r="8" fill="#2563EB" stroke="white" stroke-width="3"/></svg>'
+  '<circle cx="14" cy="14" r="8" fill="#2B6358" stroke="white" stroke-width="3"/></svg>'
 
 /** 카카오맵을 렌더링하고, 중심 좌표/카페 마커/선택 상태를 반영한다 */
 export function MapView({ cafes, center, selectedId, onSelect }: Props) {

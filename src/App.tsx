@@ -97,7 +97,24 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="app-header-row">
-          <h1 className="app-title">🎈 우리동네 키즈카페</h1>
+          <h1 className="app-title">
+            <svg
+              className="app-title-icon"
+              viewBox="0 0 22 22"
+              width="22"
+              height="22"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M11 18.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 11 6.1a4.3 4.3 0 0 1 7.5 2.4c0 5.4-7.5 10-7.5 10Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              />
+            </svg>
+            우리동네 키즈카페
+          </h1>
           {visitorCount !== null && (
             <div className="visitor-badge" title="오늘 이 서비스에 방문한 수 (매일 00시 초기화)">
               <span className="visitor-label">오늘의 방문</span>
@@ -178,7 +195,11 @@ export default function App() {
       </main>
 
       <button className="fab" type="button" onClick={() => setShowAdd(true)} aria-label="키즈카페 추가">
-        ＋ 추가
+        <svg viewBox="0 0 18 18" width="16" height="16" fill="none" aria-hidden="true">
+          <line x1="9" y1="3" x2="9" y2="15" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+          <line x1="3" y1="9" x2="15" y2="9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+        </svg>
+        추가
       </button>
 
       {showAdd && (

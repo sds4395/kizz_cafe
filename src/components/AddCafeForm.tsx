@@ -96,14 +96,40 @@ export function AddCafeForm({ onClose, onSubmit, onAppend, cafes }: Props) {
         lat: selected.lat,
         lng: selected.lng,
       }
+      let matched = false // 공공데이터(소상공인)로 상호·좌표를 확정했는지
+
+      // 1) 소상공인 공공데이터에서 같은 업소 재조회 → 있으면 그 정보로 치환
       try {
         const r = await fetch(
           `/api/place?lat=${selected.lat}&lng=${selected.lng}&name=${encodeURIComponent(selected.name)}`,
         )
         const pub = await r.json()
-        if (pub && pub.ok) src = { name: pub.name, address: pub.address, lat: pub.lat, lng: pub.lng }
+        if (pub && pub.ok) {
+          src = { name: pub.name, address: pub.address, lat: pub.lat, lng: pub.lng }
+          matched = true
+        }
       } catch {
-        /* 공공데이터 조회 실패 → 카카오 정보로 폴백 */
+        /* 공공데이터 조회 실패 → 아래 지오코더/카카오 폴백 */
+      }
+
+      // 2) 공공데이터에 없으면 → VWorld 지오코더로 카카오 주소의 좌표를 확보
+      //    (카카오 좌표를 그대로 저장하지 않기 위한 공공 지오코더 치환)
+      if (!matched && selected.address) {
+        try {
+          const r = await fetch(`/api/geocode?query=${encodeURIComponent(selected.address)}`)
+          const geo = await r.json()
+          if (geo && geo.ok) {
+            src = {
+              name: selected.name,
+              address: geo.address || selected.address,
+              lat: geo.lat,
+              lng: geo.lng,
+            }
+          }
+          // 3) 지오코더도 실패하면 src 초기값(카카오 좌표) 유지 = 최후 폴백
+        } catch {
+          /* 지오코더 실패 → 카카오 좌표로 폴백 */
+        }
       }
 
       await onSubmit({
@@ -131,7 +157,10 @@ export function AddCafeForm({ onClose, onSubmit, onAppend, cafes }: Props) {
         <div className="modal-head">
           <h2>키즈카페 추가</h2>
           <button className="modal-close" type="button" onClick={onClose} aria-label="닫기">
-            ✕
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true">
+              <line x1="3" y1="3" x2="13" y2="13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              <line x1="13" y1="3" x2="3" y2="13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
 
@@ -177,7 +206,19 @@ export function AddCafeForm({ onClose, onSubmit, onAppend, cafes }: Props) {
                           {p.category && (
                             <span className="place-cat">{p.category.split('>').pop()?.trim()}</span>
                           )}
-                          {p.phone && <span className="place-phone">📞 {p.phone}</span>}
+                          {p.phone && (
+                            <span className="place-phone">
+                              <svg viewBox="0 0 18 18" width="11" height="11" fill="none" aria-hidden="true">
+                                <path
+                                  d="M4.1 3.2h2.1l1 2.9-1.4 1.3a7.6 7.6 0 0 0 3.6 3.6l1.3-1.4 2.9 1v2.1c0 .7-.6 1.2-1.3 1.1A11.6 11.6 0 0 1 3 4.5c-.1-.7.4-1.3 1.1-1.3Z"
+                                  stroke="currentColor"
+                                  strokeWidth="1.3"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              {p.phone}
+                            </span>
+                          )}
                         </span>
                       </span>
                       {reg && <span className="place-badge">이미등록</span>}
@@ -198,7 +239,19 @@ export function AddCafeForm({ onClose, onSubmit, onAppend, cafes }: Props) {
               </div>
               <p className="cafe-region">{regionFromAddress(selected.address)}</p>
               <p className="cafe-address">{selected.address || '주소 정보 없음'}</p>
-              {selected.phone && <p className="selected-phone">📞 {selected.phone}</p>}
+              {selected.phone && (
+                <p className="selected-phone">
+                  <svg viewBox="0 0 18 18" width="12" height="12" fill="none" aria-hidden="true">
+                    <path
+                      d="M4.1 3.2h2.1l1 2.9-1.4 1.3a7.6 7.6 0 0 0 3.6 3.6l1.3-1.4 2.9 1v2.1c0 .7-.6 1.2-1.3 1.1A11.6 11.6 0 0 1 3 4.5c-.1-.7.4-1.3 1.1-1.3Z"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {selected.phone}
+                </p>
+              )}
             </div>
 
             {registered ? (
