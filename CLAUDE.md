@@ -69,3 +69,13 @@ supabase/schema.sql           DB 스키마 + RLS 정책
 1. **세션 시작 시**: `git pull` 후 [DEVLOG.md](DEVLOG.md)를 읽고 직전 맥락을 파악한다.
 2. **세션 종료 시**: DEVLOG.md의 "현재 상태 / 다음 할 일"을 갱신하고 코드와 함께 commit & push 한다.
 3. 실험 중인 코드도 PC를 떠나기 전 커밋한다(`git stash`는 로컬에만 남아 다른 PC로 안 넘어감).
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in this repo's GitHub Issues (sds4395/kizz_cafe), via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context layout (one `GLOSSARY.md` + `docs/adr/` at the repo root). See `docs/agents/domain.md`.
